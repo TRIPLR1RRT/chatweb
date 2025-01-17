@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Chatbot with Error Logging</title>
+  <title>AI Chatbot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -68,41 +68,43 @@
       <button type="submit">Send</button>
     </form>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/enplex.js"></script>
   <script>
     const messagesDiv = document.getElementById("messages");
     const chatForm = document.getElementById("chat-form");
 
-    // Error logging function
-    function logError(error) {
-      console.error("Error occurred:", error);
+    // Basic AI logic
+    function getAIResponse(input) {
+      const responses = {
+        "hello": "Hi there! How can I help you?",
+        "how are you": "I'm just a bot, but I'm doing great! How about you?",
+        "what is your name": "I am your friendly AI chatbot!",
+        "bye": "Goodbye! Have a great day!",
+      };
 
-      // Optionally send error to a remote logging service
-      // fetch("https://your-logging-service.com/log", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ error: error.toString(), time: new Date() }),
-      // });
+      // Check for exact matches
+      const lowerInput = input.toLowerCase();
+      if (responses[lowerInput]) {
+        return responses[lowerInput];
+      }
+
+      // Fallback response
+      return "I'm not sure how to respond to that. Can you rephrase?";
     }
 
-    chatForm.addEventListener("submit", async (e) => {
+    chatForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const userInput = document.getElementById("user-input").value;
+      const userInput = document.getElementById("user-input").value.trim();
       if (!userInput) return;
 
       // Display user message
       messagesDiv.innerHTML += `<div><b>You:</b> ${userInput}</div>`;
       document.getElementById("user-input").value = "";
 
-      try {
-        // Use enplex.js directly in the browser
-        const answer = await NextChat.ask(userInput, { model: "llama-vision" });
-        messagesDiv.innerHTML += `<div><b>AI:</b> ${answer}</div>`;
-      } catch (error) {
-        // Log the error and show a user-friendly message
-        logError(error);
-        messagesDiv.innerHTML += `<div><b>AI:</b> Sorry, something went wrong. Please try again later.</div>`;
-      }
+      // Get AI response
+      const aiResponse = getAIResponse(userInput);
+      messagesDiv.innerHTML += `<div><b>AI:</b> ${aiResponse}</div>`;
+
+      // Scroll to the bottom
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
   </script>
