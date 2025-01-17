@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Chatbot</title>
+  <title>AI Chatbot with Error Logging</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -73,6 +73,18 @@
     const messagesDiv = document.getElementById("messages");
     const chatForm = document.getElementById("chat-form");
 
+    // Error logging function
+    function logError(error) {
+      console.error("Error occurred:", error);
+
+      // Optionally send error to a remote logging service
+      // fetch("https://your-logging-service.com/log", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ error: error.toString(), time: new Date() }),
+      // });
+    }
+
     chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const userInput = document.getElementById("user-input").value;
@@ -87,8 +99,9 @@
         const answer = await NextChat.ask(userInput, { model: "llama-vision" });
         messagesDiv.innerHTML += `<div><b>AI:</b> ${answer}</div>`;
       } catch (error) {
-        messagesDiv.innerHTML += `<div><b>AI:</b> Sorry, I couldn't process that.</div>`;
-        console.error(error);
+        // Log the error and show a user-friendly message
+        logError(error);
+        messagesDiv.innerHTML += `<div><b>AI:</b> Sorry, something went wrong. Please try again later.</div>`;
       }
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
