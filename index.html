@@ -1,9 +1,9 @@
-sw<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Chatbot</title>
+  <title>Static AI Chatbot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -72,26 +72,7 @@ sw<!DOCTYPE html>
     const messagesDiv = document.getElementById("messages");
     const chatForm = document.getElementById("chat-form");
 
-    // Basic AI logic
-    function getAIResponse(input) {
-      const responses = {
-        "hello": "Hi there! How can I help you?",
-        "how are you": "I'm just a bot, but I'm doing great! How about you?",
-        "what is your name": "I am your friendly AI chatbot!",
-        "bye": "Goodbye! Have a great day!",
-      };
-
-      // Check for exact matches
-      const lowerInput = input.toLowerCase();
-      if (responses[lowerInput]) {
-        return responses[lowerInput];
-      }
-
-      // Fallback response
-      return "I'm not sure how to respond to that. Can you rephrase?";
-    }
-
-    chatForm.addEventListener("submit", (e) => {
+    chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const userInput = document.getElementById("user-input").value.trim();
       if (!userInput) return;
@@ -100,11 +81,28 @@ sw<!DOCTYPE html>
       messagesDiv.innerHTML += `<div><b>You:</b> ${userInput}</div>`;
       document.getElementById("user-input").value = "";
 
-      // Get AI response
-      const aiResponse = getAIResponse(userInput);
-      messagesDiv.innerHTML += `<div><b>AI:</b> ${aiResponse}</div>`;
+      try {
+        // Call the proxy serverless function to interact with ChatGPT API
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userInput }),
+        });
 
-      // Scroll to the bottom
+        if (!response.ok) {
+          throw new Error("Failed to fetch the response from the server.");
+        }
+
+        const data = await response.json();
+        const aiResponse = data.response;
+
+        // Display AI response
+        messagesDiv.innerHTML += `<div><b>AI:</b> ${aiResponse}</div>`;
+      } catch (error) {
+        console.error(error);
+        messagesDiv.innerHTML += `<div><b>AI:</b> Sorry, something went wrong. Please try again later.</div>`;
+      }
+
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
   </script>
