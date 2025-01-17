@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #chat-container {
+      width: 90%;
+      max-width: 500px;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    #messages div {
+      margin: 5px 0;
+    }
+    form {
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background: #1e1e1e;
+      color: white;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      background-color: #6200ea;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3700b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="messages"></div>
+    <form id="chat-form">
+      <input type="text" id="user-input" placeholder="Ask something..." required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/enplex.js"></script>
+  <script>
+    const messagesDiv = document.getElementById("messages");
+    const chatForm = document.getElementById("chat-form");
+
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const userInput = document.getElementById("user-input").value;
+      if (!userInput) return;
+
+      // Display user message
+      messagesDiv.innerHTML += `<div><b>You:</b> ${userInput}</div>`;
+      document.getElementById("user-input").value = "";
+
+      try {
+        // Use enplex.js directly in the browser
+        const answer = await NextChat.ask(userInput, { model: "llama-vision" });
+        messagesDiv.innerHTML += `<div><b>AI:</b> ${answer}</div>`;
+      } catch (error) {
+        messagesDiv.innerHTML += `<div><b>AI:</b> Sorry, I couldn't process that.</div>`;
+        console.error(error);
+      }
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+  </script>
+</body>
+</html>
